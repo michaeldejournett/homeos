@@ -50,12 +50,6 @@ media.{$HOMEOS_DOMAIN} {
 	reverse_proxy jellyfin:8096
 }
 
-# Password vault (own login; Bitwarden apps can't do browser SSO redirects)
-vault.{$HOMEOS_DOMAIN} {
-	import tls_{$TLS_MODE}
-	reverse_proxy vaultwarden:80
-}
-
 # Home Assistant (runs in its own VM)
 ha.{$HOMEOS_DOMAIN} {
 	import tls_{$TLS_MODE}

@@ -6,6 +6,9 @@
 #
 # Steam + Sunshine run natively on Windows (they need the GPU and a desktop
 # session), see docs/gaming.md.
+#
+# The OpenClaw Gateway (the assistant MobileVault talks to) also runs natively
+# and is published privately with Tailscale Serve, see docs/mobilevault.md.
 
 name: homeos
 
@@ -100,6 +103,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: home.${HOMEOS_DOMAIN}
       HOMEPAGE_VAR_DOMAIN: ${HOMEOS_DOMAIN}
       HOMEPAGE_VAR_HOST_IP: ${HOST_LAN_IP}
+      HOMEPAGE_VAR_OPENCLAW_URL: ${OPENCLAW_URL}
     volumes:
       - ./homepage/config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -120,21 +124,6 @@ services:
       - ${DATA_DIR}/jellyfin/config:/config
       - ${DATA_DIR}/jellyfin/cache:/cache
       - ${MEDIA_DIR}:/media:ro
-
-  # ---------------------------------------------------------------------------
-  # Password vault (Bitwarden-compatible). Use the official Bitwarden apps.
-  # ---------------------------------------------------------------------------
-  vaultwarden:
-    <<: *common
-    image: vaultwarden/server:latest
-    environment:
-      TZ: ${TZ}
-      DOMAIN: https://vault.${HOMEOS_DOMAIN}
-      SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN:?run scripts/windows/init-env.ps1}
-      WEBSOCKET_ENABLED: "true"
-    volumes:
-      - ${DATA_DIR}/vaultwarden:/data
 
   # ---------------------------------------------------------------------------
   # Local voice pipeline for Home Assistant (speech-to-text / text-to-speech /

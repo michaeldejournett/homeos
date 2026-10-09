@@ -4,12 +4,10 @@
         icon: home-assistant.png
         href: https://ha.{{HOMEPAGE_VAR_DOMAIN}}
         description: Lights, voice, automations, TV control
-    - Vault:
-        icon: vaultwarden.png
-        href: https://vault.{{HOMEPAGE_VAR_DOMAIN}}
-        description: Family passwords
-        server: local
-        container: homeos-vaultwarden-1
+    - OpenClaw:
+        icon: mdi-robot-outline
+        href: "{{HOMEPAGE_VAR_OPENCLAW_URL}}"
+        description: Assistant behind MobileVault (Control UI, Tailscale only)
 
 - Entertainment:
     - Jellyfin:

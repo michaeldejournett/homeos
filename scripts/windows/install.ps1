@@ -84,3 +84,4 @@ Write-Host '  1. Start Docker Desktop once and enable "Start Docker Desktop when
 Write-Host '  2. scripts\windows\init-env.ps1, then edit .env'
 Write-Host '  3. scripts\windows\new-homeassistant-vm.ps1'
 Write-Host '  4. docker compose up -d --build'
+Write-Host '  5. (non-elevated) scripts\windows\setup-openclaw.ps1 for MobileVault'

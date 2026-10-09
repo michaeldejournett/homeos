@@ -53,18 +53,11 @@ Pick one or both:
 Give the phone its own **"Wall Panel"** HA user, a non-admin with access to only the
 dashboards it needs. That way a guest picking it up can't change settings.
 
-## Mobile vault (passwords)
+## MobileVault
 
-Install the official **Bitwarden** app (iOS / Android / browser extensions / desktop):
-
-1. On the login screen, change the region dropdown to **Self-hosted**.
-2. Server URL: `https://vault.<domain>`.
-3. Create or log in to your account (invite family from the `/admin` panel).
-
-Away from home, the app keeps working offline with its cached vault. It syncs when it can
-reach the server again. With Tailscale on the phone, it syncs from anywhere.
-Share passwords between family members with a Bitwarden **Organization**
-("Family"), which Vaultwarden supports for free.
+The phone app for your OpenClaw assistant. Setup, pairing and permissions are in
+[mobilevault.md](mobilevault.md). On the spare phone it also works as the default
+assistant: hold power to ask it something about the house.
 
 ## Anything else
 

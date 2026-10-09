@@ -8,11 +8,11 @@ like Jellyfin have finer-grained controls (ratings, libraries) than any SSO laye
 
 Create these in Authentik (Directory > Groups):
 
-| Group | Who | Dashboard | Home Assistant | Jellyfin | Vault | Steam (Moonlight) | Admin pages |
+| Group | Who | Dashboard | Home Assistant | Jellyfin | Assistant (MobileVault) | Steam (Moonlight) | Admin pages |
 |---|---|---|---|---|---|---|---|
-| `homeos-admins` | You | ✅ | Admin | Admin | Own + family org (owner) | ✅ | ✅ |
-| `homeos-adults` | Partner, adults | ✅ | User | All libraries | Own + family org | ✅ | ❌ |
-| `homeos-kids` | Children | ✅ | User, kids' dashboard only | Kids libraries, max rating set | Own vault | Paired devices only | ❌ |
+| `homeos-admins` | You | ✅ | Admin | Admin | ✅ paired phone | ✅ | ✅ |
+| `homeos-adults` | Partner, adults | ✅ | User | All libraries | ❌ (see below) | ✅ | ❌ |
+| `homeos-kids` | Children | ✅ | User, kids' dashboard only | Kids libraries, max rating set | ❌ | Paired devices only | ❌ |
 | `homeos-guests` | Visitors | Guest page | ❌ | Optional guest user | ❌ | ❌ | ❌ |
 
 ## How each layer is enforced
@@ -34,10 +34,11 @@ Give kids and the wall-panel phone their own dashboards, and hide admin panels f
 HA has no native OIDC; community integrations exist, but separate HA logins are
 the most reliable option today.
 
-**Vaultwarden**: everyone has their own encrypted vault. Even the server admin can't
-read it. Shared logins go in a "Family" organization with *collections*, e.g. "Streaming
-logins" shared with adults and "Wi-Fi" shared with everyone. Signups stay off; invite people
-from `/admin`.
+**OpenClaw / MobileVault**: the Gateway is a personal, single-operator assistant, and it can
+run commands on the PC. Only phones you pair (`openclaw devices approve`) on your tailnet can
+use it. What it can touch in the house is limited to entities exposed to Assist in Home
+Assistant. Details in [mobilevault.md](mobilevault.md). Give other adults HA and voice
+pucks rather than pairing their phones to your Gateway.
 
 **Steam / Sunshine**: only devices you've paired (PIN entry in the Sunshine UI) can stream.
 Use Steam Family / Family View on the Steam side to limit which games kids can launch.
@@ -50,5 +51,4 @@ Nothing is port-forwarded on the router.
 1. Authentik: create the user and add them to a group.
 2. Jellyfin: create the user (or let SSO create it), then set libraries and parental rating.
 3. Home Assistant: add a Person/user and pick their dashboard.
-4. Vaultwarden `/admin`: invite them, then add them to the Family org collections.
-5. Tailscale: invite them if they need access from outside the house.
+4. Tailscale: invite them if they need access from outside the house.
