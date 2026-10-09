@@ -50,6 +50,14 @@ Why it's set up this way:
 **Already running OpenClaw on another computer?** You can keep it there and skip step 4.
 Moving it to the HomeOS PC means it stays up when your main computer sleeps.
 
+## Home controls in the app
+
+MobileVault's **Home** screen talks to Home Assistant directly, separately from the assistant:
+rooms, scenes, automations and a favorites widget. Connect it in MobileVault › Home with
+`https://ha.<domain>` and a Home Assistant long-lived token. This needs `TLS_MODE=cloudflare`,
+because MobileVault only trusts publicly trusted certificates. Details are in MobileVault's
+`docs/home-control.md`.
+
 ## Connect the phone
 
 1. Install Tailscale on the phone and sign in to the same tailnet.

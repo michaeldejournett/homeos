@@ -11,7 +11,7 @@ gets updates and has a large community behind it:
 | Family accounts, groups, who-can-access-what | [Authentik](https://goauthentik.io) | Docker |
 | Movies / shows / music in one library | [Jellyfin](https://jellyfin.org) | Docker |
 | Family password manager | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) + official Bitwarden apps | Docker |
-| Personal assistant on your phone ([MobileVault](https://github.com/michaeldejournett/MobileVault)) | [OpenClaw](https://openclaw.ai) Gateway, with Home Assistant connected over MCP | Windows (native) + Tailscale Serve |
+| Phone app: home controls, automations, widget + your assistant ([MobileVault](https://github.com/michaeldejournett/MobileVault)) | [OpenClaw](https://openclaw.ai) Gateway, with Home Assistant connected over MCP | Windows (native) + Tailscale Serve |
 | Steam library on the TV and phone | Steam + [Sunshine](https://github.com/LizardByte/Sunshine) → [Moonlight](https://moonlight-stream.org) | Windows (native) |
 | One TV screen: house controls + your media + streaming apps + games | **HomeOS TV app** ([clients/androidtv](clients/androidtv)) | Fire TV / Android TV |
 | One home screen for everything (browser) | [Homepage](https://gethomepage.dev) | Docker |

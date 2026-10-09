@@ -56,9 +56,13 @@ dashboards it needs. That way a guest picking it up can't change settings.
 
 ## MobileVault
 
-The phone app for your OpenClaw assistant. Setup, pairing and permissions are in
-[mobilevault.md](mobilevault.md). On the spare phone it also works as the default
-assistant: hold power to ask it something about the house.
+Your phone app for the house and the assistant:
+- **Home** (house button, top bar): rooms of tap-to-toggle tiles, scenes, Home Assistant
+  automations (run, turn on/off, edit) and a home-screen widget for favorites.
+- **Chat**: your OpenClaw assistant.
+
+Setup, pairing and permissions are in [mobilevault.md](mobilevault.md). On the spare phone
+it also works as the default assistant: hold power to ask it something about the house.
 
 ## Password manager
 
