@@ -1,0 +1,3 @@
+# Live container status badges (socket is mounted read-only in compose.yaml).
+local:
+  socket: /var/run/docker.sock

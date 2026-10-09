@@ -1,0 +1,14 @@
+title: HomeOS
+theme: dark
+color: slate
+headerStyle: clean
+layout:
+  Home:
+    style: row
+    columns: 3
+  Entertainment:
+    style: row
+    columns: 3
+  Admin:
+    style: row
+    columns: 3

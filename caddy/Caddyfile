@@ -1,0 +1,63 @@
+# HomeOS reverse proxy. Hostnames come from HOMEOS_DOMAIN in .env.
+{
+	email {$ACME_EMAIL}
+}
+
+# --- TLS modes (picked by TLS_MODE in .env) -------------------------------
+(tls_cloudflare) {
+	tls {
+		dns cloudflare {$CLOUDFLARE_API_TOKEN}
+	}
+}
+
+(tls_internal) {
+	tls internal
+}
+
+# --- Authentik forward auth ------------------------------------------------
+# Import into any site that has no login of its own. Authentik decides who
+# gets in (see docs/permissions.md) and passes identity headers through.
+(authentik) {
+	route {
+		reverse_proxy /outpost.goauthentik.io/* authentik-server:9000
+
+		forward_auth authentik-server:9000 {
+			uri /outpost.goauthentik.io/auth/caddy
+			copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Name X-Authentik-Uid
+			trusted_proxies private_ranges
+		}
+	}
+}
+
+# --- Sites -----------------------------------------------------------------
+
+# Identity provider / family account management
+auth.{$HOMEOS_DOMAIN} {
+	import tls_{$TLS_MODE}
+	reverse_proxy authentik-server:9000
+}
+
+# Dashboard (behind SSO)
+home.{$HOMEOS_DOMAIN} {
+	import tls_{$TLS_MODE}
+	import authentik
+	reverse_proxy homepage:3000
+}
+
+# Media server (has its own login + parental controls; TV apps need direct access)
+media.{$HOMEOS_DOMAIN} {
+	import tls_{$TLS_MODE}
+	reverse_proxy jellyfin:8096
+}
+
+# Password vault (own login; Bitwarden apps can't do browser SSO redirects)
+vault.{$HOMEOS_DOMAIN} {
+	import tls_{$TLS_MODE}
+	reverse_proxy vaultwarden:80
+}
+
+# Home Assistant (runs in its own VM)
+ha.{$HOMEOS_DOMAIN} {
+	import tls_{$TLS_MODE}
+	reverse_proxy {$HA_LAN_IP}:8123
+}

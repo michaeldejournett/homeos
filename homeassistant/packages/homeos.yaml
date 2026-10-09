@@ -1,0 +1,83 @@
+# HomeOS package for Home Assistant.
+#
+# Install: copy this file to /config/packages/homeos.yaml on the HA VM (use
+# the File editor or Samba add-on) and add to configuration.yaml:
+#
+#   homeassistant:
+#     packages: !include_dir_named packages
+#
+#   http:                       # needed because HA sits behind Caddy
+#     use_x_forwarded_for: true
+#     trusted_proxies:
+#       - 192.168.1.10          # HOST_LAN_IP from .env
+#
+# Then add the Fire TV with the "Android Debug Bridge" integration and set
+# the entity id below to match (Settings > Devices > Fire TV).
+
+input_text:
+  homeos_tv_entity:
+    name: Fire TV media player entity
+    initial: media_player.fire_tv
+
+# Voice: "open Netflix on the TV", "launch Jellyfin on TV", "play Steam on the TV"
+automation:
+  - id: homeos_voice_launch_tv_app
+    alias: "HomeOS: launch app on Fire TV by voice"
+    mode: single
+    triggers:
+      - trigger: conversation
+        command:
+          - "(open|launch|start|put) {app} on [the] (tv|television)"
+          - "(play|watch) {app} on [the] (tv|television)"
+    variables:
+      # Fire TV package names. Check yours with: adb shell pm list packages
+      apps:
+        netflix: com.netflix.ninja
+        youtube: com.amazon.firetv.youtube
+        disney: com.disney.disneyplus
+        disney plus: com.disney.disneyplus
+        prime: com.amazon.firebat
+        prime video: com.amazon.firebat
+        hulu: com.hulu.plus
+        max: com.wbd.stream
+        jellyfin: org.jellyfin.androidtv
+        movies: org.jellyfin.androidtv
+        steam: com.limelight
+        games: com.limelight
+        moonlight: com.limelight
+      requested: "{{ trigger.slots.app | lower | trim }}"
+      package: "{{ apps.get(requested, '') }}"
+      tv: "{{ states('input_text.homeos_tv_entity') }}"
+    actions:
+      - if:
+          - condition: template
+            value_template: "{{ package == '' }}"
+        then:
+          - set_conversation_response: "Sorry, I don't know an app called {{ requested }}."
+          - stop: unknown app
+      - action: media_player.turn_on
+        target:
+          entity_id: "{{ tv }}"
+      - action: media_player.select_source
+        target:
+          entity_id: "{{ tv }}"
+        data:
+          source: "{{ package }}"
+      - set_conversation_response: "Opening {{ requested }} on the TV."
+
+script:
+  homeos_movie_night:
+    alias: Movie night
+    description: Turn on the TV and open Jellyfin. Add your own lights to the sequence.
+    sequence:
+      - action: media_player.turn_on
+        target:
+          entity_id: "{{ states('input_text.homeos_tv_entity') }}"
+      - action: media_player.select_source
+        target:
+          entity_id: "{{ states('input_text.homeos_tv_entity') }}"
+        data:
+          source: org.jellyfin.androidtv
+      # - action: light.turn_on
+      #   target: { area_id: living_room }
+      #   data: { brightness_pct: 15 }

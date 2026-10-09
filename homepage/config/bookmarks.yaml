@@ -1,0 +1,14 @@
+# Streaming services live in their own apps on the Fire TV / phone; these
+# are quick links for the browser. Add or remove to match your subscriptions.
+- Streaming:
+    - Netflix:
+        - href: https://www.netflix.com
+    - YouTube:
+        - href: https://www.youtube.com
+    - Disney+:
+        - href: https://www.disneyplus.com
+    - Prime Video:
+        - href: https://www.primevideo.com
+- Find something to watch:
+    - JustWatch:
+        - href: https://www.justwatch.com

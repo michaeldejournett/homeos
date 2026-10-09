@@ -1,0 +1,30 @@
+# Links use HOMEPAGE_VAR_DOMAIN (set from HOMEOS_DOMAIN in compose.yaml).
+- Home:
+    - Home Assistant:
+        icon: home-assistant.png
+        href: https://ha.{{HOMEPAGE_VAR_DOMAIN}}
+        description: Lights, voice, automations, TV control
+    - Vault:
+        icon: vaultwarden.png
+        href: https://vault.{{HOMEPAGE_VAR_DOMAIN}}
+        description: Family passwords
+        server: local
+        container: homeos-vaultwarden-1
+
+- Entertainment:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: https://media.{{HOMEPAGE_VAR_DOMAIN}}
+        description: Movies, shows, music
+        server: local
+        container: homeos-jellyfin-1
+    - Steam (Sunshine):
+        icon: sunshine.png
+        href: https://{{HOMEPAGE_VAR_HOST_IP}}:47990
+        description: Pair Moonlight clients (admin only)
+
+- Admin:
+    - Accounts & Permissions:
+        icon: authentik.png
+        href: https://auth.{{HOMEPAGE_VAR_DOMAIN}}/if/admin/
+        description: Users, groups, app access

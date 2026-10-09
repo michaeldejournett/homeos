@@ -1,0 +1,170 @@
+# HomeOS service stack. Runs on Docker Desktop (WSL2 backend) on the Windows host.
+#
+# Home Assistant is NOT in here: it runs as Home Assistant OS in a Hyper-V VM
+# (scripts/windows/new-homeassistant-vm.ps1) so it gets its own LAN IP for
+# device discovery (ESPHome voice pucks, Fire TV, Chromecast, etc.).
+#
+# Steam + Sunshine run natively on Windows (they need the GPU and a desktop
+# session), see docs/gaming.md.
+
+name: homeos
+
+x-common: &common
+  restart: unless-stopped
+  environment:
+    TZ: ${TZ}
+
+services:
+  # ---------------------------------------------------------------------------
+  # Front door: HTTPS reverse proxy for every service.
+  # ---------------------------------------------------------------------------
+  caddy:
+    <<: *common
+    build: ./caddy
+    image: homeos/caddy:local
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      TZ: ${TZ}
+      HOMEOS_DOMAIN: ${HOMEOS_DOMAIN}
+      HA_LAN_IP: ${HA_LAN_IP}
+      TLS_MODE: ${TLS_MODE}
+      ACME_EMAIL: ${ACME_EMAIL}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${DATA_DIR}/caddy/data:/data
+      - ${DATA_DIR}/caddy/config:/config
+
+  # ---------------------------------------------------------------------------
+  # Identity & permissions: one login for the family, groups decide access.
+  # ---------------------------------------------------------------------------
+  authentik-db:
+    <<: *common
+    image: postgres:16-alpine
+    environment:
+      TZ: ${TZ}
+      POSTGRES_DB: authentik
+      POSTGRES_USER: authentik
+      POSTGRES_PASSWORD: ${AUTHENTIK_PG_PASS:?run scripts/windows/init-env.ps1}
+    volumes:
+      - ${DATA_DIR}/authentik/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d authentik -U authentik"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  authentik-server:
+    <<: *common
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG}
+    command: server
+    environment: &authentik-env
+      TZ: ${TZ}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?run scripts/windows/init-env.ps1}
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_PG_PASS}
+    volumes:
+      - ${DATA_DIR}/authentik/media:/media
+      - ${DATA_DIR}/authentik/templates:/templates
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+
+  authentik-worker:
+    <<: *common
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG}
+    command: worker
+    environment: *authentik-env
+    volumes:
+      - ${DATA_DIR}/authentik/media:/media
+      - ${DATA_DIR}/authentik/certs:/certs
+      - ${DATA_DIR}/authentik/templates:/templates
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Dashboard: the "home screen" for every device (TV browser, phone, PC).
+  # ---------------------------------------------------------------------------
+  homepage:
+    <<: *common
+    image: ghcr.io/gethomepage/homepage:latest
+    environment:
+      TZ: ${TZ}
+      HOMEPAGE_ALLOWED_HOSTS: home.${HOMEOS_DOMAIN}
+      HOMEPAGE_VAR_DOMAIN: ${HOMEOS_DOMAIN}
+      HOMEPAGE_VAR_HOST_IP: ${HOST_LAN_IP}
+    volumes:
+      - ./homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # ---------------------------------------------------------------------------
+  # Media: your own movies, shows, music, photos. Apps on Fire TV / phone.
+  # ---------------------------------------------------------------------------
+  jellyfin:
+    <<: *common
+    image: jellyfin/jellyfin:latest
+    environment:
+      TZ: ${TZ}
+      JELLYFIN_PublishedServerUrl: https://media.${HOMEOS_DOMAIN}
+    ports:
+      - "8096:8096"      # direct LAN access for TV apps
+      - "7359:7359/udp"  # client auto-discovery
+    volumes:
+      - ${DATA_DIR}/jellyfin/config:/config
+      - ${DATA_DIR}/jellyfin/cache:/cache
+      - ${MEDIA_DIR}:/media:ro
+
+  # ---------------------------------------------------------------------------
+  # Password vault (Bitwarden-compatible). Use the official Bitwarden apps.
+  # ---------------------------------------------------------------------------
+  vaultwarden:
+    <<: *common
+    image: vaultwarden/server:latest
+    environment:
+      TZ: ${TZ}
+      DOMAIN: https://vault.${HOMEOS_DOMAIN}
+      SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN:?run scripts/windows/init-env.ps1}
+      WEBSOCKET_ENABLED: "true"
+    volumes:
+      - ${DATA_DIR}/vaultwarden:/data
+
+  # ---------------------------------------------------------------------------
+  # Local voice pipeline for Home Assistant (speech-to-text / text-to-speech /
+  # wake word). Runs here rather than inside the HA VM to use the host's full
+  # CPU. Add these in HA under Settings > Devices > Wyoming Protocol, pointing
+  # at HOST_LAN_IP and the ports below.
+  # ---------------------------------------------------------------------------
+  whisper:
+    <<: *common
+    image: rhasspy/wyoming-whisper:latest
+    command: --model ${WHISPER_MODEL} --language ${WHISPER_LANG}
+    ports:
+      - "10300:10300"
+    volumes:
+      - ${DATA_DIR}/whisper:/data
+
+  piper:
+    <<: *common
+    image: rhasspy/wyoming-piper:latest
+    command: --voice ${PIPER_VOICE}
+    ports:
+      - "10200:10200"
+    volumes:
+      - ${DATA_DIR}/piper:/data
+
+  # Only needed for satellites that don't do wake word on-device (the Home
+  # Assistant Voice PE puck does it on-device; a spare phone or Pi does not).
+  openwakeword:
+    <<: *common
+    image: rhasspy/wyoming-openwakeword:latest
+    command: --preload-model ok_nabu
+    ports:
+      - "10400:10400"
