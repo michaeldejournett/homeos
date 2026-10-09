@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- LAN servers: Home Assistant's VM and Jellyfin are often reached over
+         plain http://<ip>:port inside the house. User-installed CAs are
+         trusted so TLS_MODE=internal (Caddy's own CA) works too. -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

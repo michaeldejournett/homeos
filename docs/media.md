@@ -27,7 +27,8 @@ and enable hardware acceleration there. Then change the `media.` site in the Cad
 Paid streaming services use DRM and only play inside their own apps, so no
 self-hosted software can merge them into Jellyfin. What HomeOS does instead:
 
-- **One launcher:** the Fire TV home screen already lists every service. Home Assistant
+- **One launcher:** the [HomeOS TV app](tv-app.md) shows your Jellyfin rows, every installed
+  streaming app and your house controls on one screen. Home Assistant
   can open any of them by voice ("open Disney Plus on the TV") or from a dashboard button.
 - **One search:** the Homepage dashboard links to JustWatch, which shows which of your
   services has a given title.

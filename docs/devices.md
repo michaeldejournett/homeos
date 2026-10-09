@@ -6,6 +6,7 @@ The Fire TV is the main screen. Install these apps from the Amazon Appstore:
 
 | App | Purpose |
 |---|---|
+| **HomeOS** | The home screen: house controls, Jellyfin, streaming apps and games in one place ([tv-app.md](tv-app.md)) |
 | **Jellyfin** | Your own media. Server: `https://media.<domain>` (or `http://HOST_LAN_IP:8096`) |
 | **Moonlight** | Your Steam library, streamed from the PC ([gaming.md](gaming.md)) |
 | Netflix, Disney+, etc. | Streaming services stay in their own apps ([media.md](media.md)) |
