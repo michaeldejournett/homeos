@@ -10,6 +10,7 @@ gets updates and has a large community behind it:
 | Voice pucks (wake word → speech → action) | HA Assist + [Wyoming](https://github.com/rhasspy/wyoming) Whisper / Piper / openWakeWord | Docker |
 | Family accounts, groups, who-can-access-what | [Authentik](https://goauthentik.io) | Docker |
 | Movies / shows / music in one library | [Jellyfin](https://jellyfin.org) | Docker |
+| Family password manager | [Vaultwarden](https://github.com/dani-garcia/vaultwarden) + official Bitwarden apps | Docker |
 | Personal assistant on your phone ([MobileVault](https://github.com/michaeldejournett/MobileVault)) | [OpenClaw](https://openclaw.ai) Gateway, with Home Assistant connected over MCP | Windows (native) + Tailscale Serve |
 | Steam library on the TV and phone | Steam + [Sunshine](https://github.com/LizardByte/Sunshine) → [Moonlight](https://moonlight-stream.org) | Windows (native) |
 | One home screen for everything | [Homepage](https://gethomepage.dev) | Docker |
@@ -26,8 +27,9 @@ gets updates and has a large community behind it:
    Netflix…)       ├──▶│   Caddy :443 ─▶ home.  → Homepage  (SSO via Authentik) │
                    │   │              ─▶ auth.  → Authentik                     │
   Spare phone ─────┤   │              ─▶ media. → Jellyfin                      │
-  (wall dashboard, │   │              ─▶ ha.    → Home Assistant VM ──┐         │
-   MobileVault)    │   │                                              │         │
+  (wall dashboard, │   │              ─▶ vault. → Vaultwarden                   │
+   MobileVault,    │   │              ─▶ ha.    → Home Assistant VM ──┐         │
+   Bitwarden)      │   │                                              │         │
                    │   │   Whisper :10300  Piper :10200  OWW :10400   │         │
   Voice pucks ─────┘   │        ▲ speech-to-text / text-to-speech     │         │
   (ESPHome) ──────────────────────────────────▶ Hyper-V: Home Assistant OS ◀───┘
@@ -63,6 +65,7 @@ account.
 
 - [setup.md](docs/setup.md): install, DNS and certificates, first boot
 - [devices.md](docs/devices.md): Fire TV, spare phone, voice pucks
+- [passwords.md](docs/passwords.md): Vaultwarden password manager for the family
 - [mobilevault.md](docs/mobilevault.md): OpenClaw Gateway for MobileVault, with Home Assistant control
 - [permissions.md](docs/permissions.md): family groups and what each one can reach
 - [media.md](docs/media.md): Jellyfin, streaming services, what "one place" can mean

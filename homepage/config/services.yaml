@@ -4,6 +4,12 @@
         icon: home-assistant.png
         href: https://ha.{{HOMEPAGE_VAR_DOMAIN}}
         description: Lights, voice, automations, TV control
+    - Passwords:
+        icon: vaultwarden.png
+        href: https://vault.{{HOMEPAGE_VAR_DOMAIN}}
+        description: Family password manager (Bitwarden apps)
+        server: local
+        container: homeos-vaultwarden-1
     - OpenClaw:
         icon: mdi-robot-outline
         href: "{{HOMEPAGE_VAR_OPENCLAW_URL}}"

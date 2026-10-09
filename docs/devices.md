@@ -59,6 +59,11 @@ The phone app for your OpenClaw assistant. Setup, pairing and permissions are in
 [mobilevault.md](mobilevault.md). On the spare phone it also works as the default
 assistant: hold power to ask it something about the house.
 
+## Password manager
+
+Install the **Bitwarden** app on each phone, choose **Self-hosted** on the login screen,
+and enter `https://vault.<domain>`. Details in [passwords.md](passwords.md).
+
 ## Anything else
 
 - **Zigbee / Thread / Matter devices:** plug a USB coordinator (e.g. Home Assistant

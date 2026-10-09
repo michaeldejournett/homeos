@@ -8,12 +8,12 @@ like Jellyfin have finer-grained controls (ratings, libraries) than any SSO laye
 
 Create these in Authentik (Directory > Groups):
 
-| Group | Who | Dashboard | Home Assistant | Jellyfin | Assistant (MobileVault) | Steam (Moonlight) | Admin pages |
-|---|---|---|---|---|---|---|---|
-| `homeos-admins` | You | ✅ | Admin | Admin | ✅ paired phone | ✅ | ✅ |
-| `homeos-adults` | Partner, adults | ✅ | User | All libraries | ❌ (see below) | ✅ | ❌ |
-| `homeos-kids` | Children | ✅ | User, kids' dashboard only | Kids libraries, max rating set | ❌ | Paired devices only | ❌ |
-| `homeos-guests` | Visitors | Guest page | ❌ | Optional guest user | ❌ | ❌ | ❌ |
+| Group | Who | Dashboard | Home Assistant | Jellyfin | Passwords | Assistant (MobileVault) | Steam (Moonlight) | Admin pages |
+|---|---|---|---|---|---|---|---|---|
+| `homeos-admins` | You | ✅ | Admin | Admin | Own vault + Family org owner | ✅ paired phone | ✅ | ✅ |
+| `homeos-adults` | Partner, adults | ✅ | User | All libraries | Own vault + Family org | ❌ (see below) | ✅ | ❌ |
+| `homeos-kids` | Children | ✅ | User, kids' dashboard only | Kids libraries, max rating set | Own vault + Wi-Fi collection | ❌ | Paired devices only | ❌ |
+| `homeos-guests` | Visitors | Guest page | ❌ | Optional guest user | ❌ | ❌ | ❌ | ❌ |
 
 ## How each layer is enforced
 
@@ -34,6 +34,11 @@ Give kids and the wall-panel phone their own dashboards, and hide admin panels f
 HA has no native OIDC; community integrations exist, but separate HA logins are
 the most reliable option today.
 
+**Vaultwarden**: everyone has their own end-to-end encrypted vault; even the server admin
+can't read it. Shared logins go in a "Family" organization with *collections*, e.g.
+"Streaming logins" for adults and "Wi-Fi" for everyone. Signups stay off; invite people from
+`/admin`. It keeps its own login because the Bitwarden apps don't support SSO redirects.
+
 **OpenClaw / MobileVault**: the Gateway is a personal, single-operator assistant, and it can
 run commands on the PC. Only phones you pair (`openclaw devices approve`) on your tailnet can
 use it. What it can touch in the house is limited to entities exposed to Assist in Home
@@ -51,4 +56,5 @@ Nothing is port-forwarded on the router.
 1. Authentik: create the user and add them to a group.
 2. Jellyfin: create the user (or let SSO create it), then set libraries and parental rating.
 3. Home Assistant: add a Person/user and pick their dashboard.
-4. Tailscale: invite them if they need access from outside the house.
+4. Vaultwarden `/admin`: invite them, then add them to the Family org collections.
+5. Tailscale: invite them if they need access from outside the house.

@@ -8,7 +8,7 @@
     HAOS `.vdi` image from the [HA docs](https://www.home-assistant.io/installation/windows)
     with a *bridged* network adapter. Everything else is the same.
 - A domain name (about $10/yr) with DNS on Cloudflare (free). This gets you real HTTPS
-  certificates for LAN-only services, so phones and TVs trust them with no setup.
+  certificates for LAN-only services, so phones, TVs and the Bitwarden app trust them with no setup.
   Without one, use `TLS_MODE=internal` and install Caddy's root certificate on each device.
 - Router access to reserve IP addresses.
 
@@ -82,14 +82,16 @@ docker compose ps
    Proxy Provider > **Forward auth (single application)** with external host
    `https://home.<domain>`. Then add the application to the *embedded outpost*.
 3. **Jellyfin:** `https://media.<domain>`. Create the admin and add libraries from `/media/...`.
-4. **OpenClaw + MobileVault:** follow [mobilevault.md](mobilevault.md).
-5. **Voice:** in Home Assistant, go to Settings > Devices & services > Add > **Wyoming Protocol** three
+4. **Vaultwarden:** go to `https://vault.<domain>/admin` (token: `VAULTWARDEN_ADMIN_TOKEN` in `.env`)
+   and invite the family ([passwords.md](passwords.md)).
+5. **OpenClaw + MobileVault:** follow [mobilevault.md](mobilevault.md).
+6. **Voice:** in Home Assistant, go to Settings > Devices & services > Add > **Wyoming Protocol** three
    times: `HOST_LAN_IP` ports `10300` (Whisper), `10200` (Piper) and `10400` (openWakeWord). Then
    Settings > Voice assistants > edit *Home Assistant*: set Speech-to-text to faster-whisper
    and Text-to-speech to Piper.
-6. **Sunshine:** `https://localhost:47990` on the PC. Set a username and password
+7. **Sunshine:** `https://localhost:47990` on the PC. Set a username and password
    ([gaming.md](gaming.md)).
-7. **Tailscale:** sign in on the PC and your phone to reach everything away from home.
+8. **Tailscale:** sign in on the PC and your phone to reach everything away from home.
    In the Tailscale admin console, turn on *subnet routes* for your LAN, or use split DNS.
 
 ## Updating
@@ -107,4 +109,5 @@ Everything stateful lives in `DATA_DIR` (default `./data`) plus the HA VM.
 - Back up `data/` nightly, e.g. with Windows File History or [Kopia](https://kopia.io).
   Stop `authentik-db` first, or use `docker compose exec authentik-db pg_dump -U authentik authentik`.
 - Home Assistant: Settings > System > Backups. Turn on automatic backups to a network share or cloud.
+- **Vaultwarden (`data/vaultwarden`) holds your passwords. Test restoring it.**
 - OpenClaw: back up `%USERPROFILE%\.openclaw` (config, sessions, device pairings).

@@ -33,6 +33,8 @@ self-hosted software can merge them into Jellyfin. What HomeOS does instead:
   services has a given title.
 - **One remote:** HA controls the TV (power, volume, app) from the phone, a voice puck or an
   automation, e.g. "Movie night" dims the lights and opens Jellyfin.
+- **Shared logins:** keep the family's streaming passwords in a Vaultwarden collection
+  ([passwords.md](passwords.md)).
 
 ## Ideas to add later
 

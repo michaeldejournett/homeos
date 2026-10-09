@@ -126,6 +126,20 @@ services:
       - ${MEDIA_DIR}:/media:ro
 
   # ---------------------------------------------------------------------------
+  # Password vault (Bitwarden-compatible). Use the official Bitwarden apps.
+  # ---------------------------------------------------------------------------
+  vaultwarden:
+    <<: *common
+    image: vaultwarden/server:latest
+    environment:
+      TZ: ${TZ}
+      DOMAIN: https://vault.${HOMEOS_DOMAIN}
+      SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN:?run scripts/windows/init-env.ps1}
+    volumes:
+      - ${DATA_DIR}/vaultwarden:/data
+
+  # ---------------------------------------------------------------------------
   # Local voice pipeline for Home Assistant (speech-to-text / text-to-speech /
   # wake word). Runs here rather than inside the HA VM to use the host's full
   # CPU. Add these in HA under Settings > Devices > Wyoming Protocol, pointing

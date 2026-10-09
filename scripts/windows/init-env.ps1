@@ -18,7 +18,7 @@ function New-Secret([int]$bytes = 48) {
     return [Convert]::ToBase64String($buf).TrimEnd('=').Replace('+', '-').Replace('/', '_')
 }
 
-$secrets = 'AUTHENTIK_SECRET_KEY', 'AUTHENTIK_PG_PASS'
+$secrets = 'AUTHENTIK_SECRET_KEY', 'AUTHENTIK_PG_PASS', 'VAULTWARDEN_ADMIN_TOKEN'
 $lines = Get-Content $envFile
 $lines = $lines | ForEach-Object {
     $line = $_
